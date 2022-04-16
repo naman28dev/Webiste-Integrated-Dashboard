@@ -5,12 +5,14 @@ import os
 import csv
 from sqlite3 import Error
 import pandas as pd
+from dash_application import create_dash_application
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///naman1.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+create_dash_application(app)
 
 
 class Netflix(db.Model):
