@@ -6,7 +6,6 @@ import csv
 from sqlite3 import Error
 import pandas as pd
 from dash_application import create_dash_application
-from dashPersonal_application import create
 
 app = Flask(__name__)
 
@@ -14,8 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///naman1.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 create_dash_application(app)
-create(app)
-
 
 class Netflix(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
@@ -52,18 +49,11 @@ def hello_world():
         l = request.form['Description']
         nam = Netflix(Show_ID = a, Type=b,Title = c, Director= d, Cast= e, Country=f,Date_Added = g, Release_Year=h,Rating=i,Duration= j,Listed_In = k,Description=l)
         db.session.add(nam)
-        conn = sql.connect('naman1.db', isolation_level=None, detect_types=sql.PARSE_COLNAMES)
-        db_df = pd.read_sql_query("SELECT * FROM netflix", conn)
-        db_df.to_csv('netflix_dataset.csv', index=False)
         db.session.commit()
         
 
     allnet = Netflix.query.all()
     return render_template('index.html',allnet = allnet)
-
-# @app.route('/show')
-# def products():
-#     return 
     
 
 @app.route('/update/<int:sno>',methods = ['GET', 'POST'])
@@ -96,9 +86,6 @@ def update(sno):
         naman.Listed_In = k
         naman.Description = l
         db.session.add(naman)
-        conn = sql.connect('naman1.db', isolation_level=None, detect_types=sql.PARSE_COLNAMES)
-        db_df = pd.read_sql_query("SELECT * FROM netflix", conn)
-        db_df.to_csv('netflix_dataset.csv', index=False)
         db.session.commit()
         return redirect("/")
 
@@ -109,9 +96,6 @@ def update(sno):
 def delete(sno):
     naman = Netflix.query.filter_by(sno=sno).first()
     db.session.delete(naman)
-    conn = sql.connect('naman1.db', isolation_level=None, detect_types=sql.PARSE_COLNAMES)
-    db_df = pd.read_sql_query("SELECT * FROM netflix", conn) 
-    db_df.to_csv('netflix_dataset.csv', index=False)
     db.session.commit()
     return redirect("/")
 
