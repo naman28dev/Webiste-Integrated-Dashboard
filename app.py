@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect
-from flask_sqlalchemy import SQLAlchemy
-import sqlite3 as sql
 import os
 import csv
 from sqlite3 import Error
 import pandas as pd
 from dash_application import create_dash_application
+from dashPersonal_application import create
+import sqlite3 as sql
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///naman1.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 create_dash_application(app)
-
+create(app)
 
 class Netflix(db.Model):
     sno = db.Column(db.Integer, primary_key=True)

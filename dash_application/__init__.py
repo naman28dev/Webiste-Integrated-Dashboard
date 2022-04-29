@@ -138,44 +138,54 @@ def world_map(netflix_df):
     df_country_year = netflix_df.groupby(by=['country','type','rating']).count().reset_index()
     df_country_year['total']=df_country_year.groupby(by=['country'])['title'].cumsum()
 
-    fig_world_map=px.choropleth(df_country_year.sort_values(by='rating'), locations='country', title='Country wise statistics of Ratings',color='total', locationmode='country names', animation_frame='rating', range_color=[0,1000], )
+    fig_world_map=px.choropleth(df_country_year.sort_values(by='rating'), locations='country', title='Country wise statistics of Ratings',color='total', locationmode='country names', animation_frame='rating', range_color=[0,1000],)
     return fig_world_map    
 
 def create_dash_application(flask_app):
     app1 = dash.Dash(server=flask_app,name="Netflix Dashboard", url_base_pathname="/dash/")
     netflix_df = pd.read_csv("D:/flask1/netflix_titles (1).csv")
     netflix_df = clean_netflix_df(netflix_df)
-    app1.layout = html.Div(children=[html.H1(id='header', children=[html.Div("Netflix Title Analysis", id='header-text')],style={'textAlign': 'center', 'color': '#b20710'}, className="mb-3"),html.Br(),html.Br(),html.Br(),html.Div(children=[html.Div(children=[html.P('Filter by Release Year', className='fix_label', style={'text-align': 'center', 'color': '#221f1f'}),dcc.Slider(id='slider_year',
-        included=True,
-        updatemode='drag',
-        tooltip={'always_visible': True},
-        min=1925,
-        max=2020,
-        step=1,
-        value=2009,
-        marks={str(yr): str(yr) for yr in range(1925, 2020, 10)}, className="row"),
-            html.Div([
+    app1.layout = html.Div(children=[
+
+        html.H1(id='header', children=[html.Div("Netflix Title Analysis", id='header-text')],
+                style={'textAlign': 'center', 'color': '#b20710'}, className="mb-3"),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Div(children=[
+            html.Div(children=[
+                html.P('Filter by Release Year', className='fix_label', style={'text-align': 'center', 'color': '#221f1f'}),
+                dcc.Slider(id='slider_year',
+                        included=True,
+                        updatemode='drag',
+                        tooltip={'always_visible': True},
+                        min=1925,
+                        max=2020,
+                        step=1,
+                        value=2009,
+                        marks={str(yr): str(yr) for yr in range(1925, 2020, 10)}, className="row"
+                        ),
                 html.Div([
-                    dcc.Graph(id='line_chart', config={'displayModeBar': 'hover'}), ], className="row",style={'width': '100%'}),
+                    html.Div([
+                        dcc.Graph(id='line_chart', config={'displayModeBar': 'hover'}), ], className="row",style={'width': '100%'}),
+                ]),
+            ], className="col-md-6"),
+            html.Div(children=[
+                html.Div([
+                    dcc.Graph(id='bar_fig', figure=fig_bar_horiz(netflix_df))], id='FigBarGraphDiv')
+            ], className="col-md-6"),
 
-            ]),
-        ], className="col-md-6"),
+        ],className="row"),
         html.Div(children=[
-            html.Div([
-                dcc.Graph(id='bar_fig', figure=fig_bar_horiz(netflix_df))], id='FigBarGraphDiv')
-        ], className="col-md-6"),
+            html.Div(children=[
+                html.Div([
+                    dcc.Graph(id='stack_fig', figure=fig_bar_stacked(netflix_df))], id='StackedGraphDiv')
 
-    ], className="row"),
-    html.Div(children=[
-        html.Div(children=[
-            html.Div([
-                dcc.Graph(id='stack_fig', figure=fig_bar_stacked(netflix_df))], id='StackedGraphDiv')
-
-        ], className="col-md-6"),
-        html.Div(children=[
-            html.Div([
-                dcc.Graph(id='SentBarGraphDiv', figure=fig_stack_without_flying(netflix_df)), ])
-        ], className="col-md-6"),
+            ], className="col-md-6"),
+            html.Div(children=[
+                html.Div([
+                    dcc.Graph(id='SentBarGraphDiv', figure=fig_stack_without_flying(netflix_df)), ])
+            ], className="col-md-6"),
 
         ], className="col-md-6"),
         html.Div(children=[
